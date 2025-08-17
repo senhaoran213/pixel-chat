@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Phaser Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+</head>
+<body>
+<script>
+// 游戏配置
+const config = {
+    type: Phaser.AUTO,           // 自动选择 Canvas 或 WebGL
+    width: 800,
+    height: 600,
+    physics: {
+        default: 'arcade',
+        arcade: { gravity: { y: 300 } }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+const game = new Phaser.Game(config);
+
+function preload() {
+    // 加载资源
+    this.load.image('sky', 'https://labs.phaser.io/assets/skies/space3.png');
+    this.load.image('star', 'https://labs.phaser.io/assets/sprites/star.png');
+    this.load.image('platform', 'https://labs.phaser.io/assets/sprites/platform.png');
+}
+
+let player;
+let cursors;
+
+function create() {
+    // 背景
+    this.add.image(400, 300, 'sky');
+
+    // 地面
+    const platforms = this.physics.add.staticGroup();
+    platforms.create(400, 580, 'platform').setScale(2).refreshBody();
+
+    // 玩家
+    player = this.physics.add.sprite(100, 450, 'star');
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
+
+    // 碰撞
+    this.physics.add.collider(player, platforms);
+
+    // 键盘
+    cursors = this.input.keyboard.createCursorKeys();
+}
+
+function update() {
+    // 玩家移动
+    if (cursors.left.isDown) {
+        player.setVelocityX(-160);
+    } else if (cursors.right.isDown) {
+        player.setVelocityX(160);
+    } else {
+        player.setVelocityX(0);
+    }
+
+    if (cursors.up.isDown && player.body.touching.down) {
+        player.setVelocityY(-330);
+    }
+}
+</script>
+</body>
+</html>
